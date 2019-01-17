@@ -78,7 +78,6 @@ This is an extract of an ansible deploy file
                 - hive.llap.io.threadpool.size=1
               tez-interactive-site:
                 - tez.am.resource.memory.mb=512
-              tez-interactive-env: []
               hive-interactive-env:
                 - hive_heapsize=512 # Heap Size of HiveServer2 Interactive
                 - llap_app_name=llapmaster01 #LLAP Instance Name
@@ -98,7 +97,6 @@ This is an extract of an ansible deploy file
                 - hive.llap.io.threadpool.size=1
               tez-interactive-site:
                 - tez.am.resource.memory.mb=512
-              tez-interactive-env: []
               hive-interactive-env:
                 - hive_heapsize=512 # Heap Size of HiveServer2 Interactive
                 - llap_app_name=llapmaster02 #LLAP Instance Name
