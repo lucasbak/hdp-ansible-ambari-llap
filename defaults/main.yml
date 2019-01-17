@@ -1,0 +1,19 @@
+wait: true
+llap_configs:
+  - host: master01.metal.ryba
+    config:
+      hive-interactive-site:
+        - hive.llap.daemon.queue.name=default #Yarn Queue Name
+        - hive.server2.tez.default.queues=default
+        - hive.server2.zookeeper.namespace=hiveserver2-llapmaster01 # zooKeeperNamespace
+        - hive.llap.daemon.service.hosts=@llapmaster01
+        - hive.server2.tez.sessions.per.default.queue=1
+        - hive.llap.daemon.yarn.container.mb=1024 # (Memory per Daemon)
+        - hive.llap.daemon.num.executors=1 # num of executors
+      tez-interactive-site:
+        - tez.am.resource.memory.mb=512
+      hive-interactive-env:
+        - hive_heapsize=512 # Heap Size of HiveServer2 Interactive
+        - llap_app_name=lldapmaster01 #LLAP Instance Name
+        - slider_am_container_mb=512
+        - llap_heap_size=512 #(LLAP Daemon Heap Size)

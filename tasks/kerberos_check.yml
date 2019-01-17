@@ -1,0 +1,25 @@
+---
+- name: Copy Keytab
+  delegate_to:  "{{item.host}}"
+  tags: ambari_hive_llap_kerberos
+  copy:
+    remote_src: '/etc/security/keytabs/hive.service.keytab'
+    dest: '/etc/security/keytabs/hive.llap.zk.sm.keytab'
+    force: no
+    mode: preserve
+  with_items:
+    - "{{ llap_configs }}"
+  # when: groups['HIVE_SERVER'].index(item.host)
+  # ignore_errors: yes
+# - name: Hive LLAP Keytab
+#   delegate_to:  "{{item.host}}"
+#   tags: ambari_hive_llap_kerberos
+#   copy:
+#     remote_src: '/etc/security/keytabs/hive.service.keytab'
+#     dest: '/etc/security/keytabs/hive.llap.zk.sm.keytab'
+#     force: no
+#     mode: preserve
+#   with_items:
+#     - "{{ llap_configs }}"
+#   # when: groups['HIVE_SERVER'].index(item.host)
+#   ignore_errors: yes

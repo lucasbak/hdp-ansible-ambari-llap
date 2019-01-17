@@ -1,0 +1,37 @@
+---
+- name: Render Hive server Interactive Script
+  copy:
+    src: templates/hive_server_interactive.py.j2
+    dest: /var/lib/ambari-server/resources/common-services/HIVE/0.12.0.2.0/package/scripts/hive_server_interactive.py
+    force: true
+    remote_src: no
+  with_items:
+    - "{{ llap_configs }}"
+- name: Render Hive server Interactive Script
+  delegate_to:  "{{item.host}}"
+  copy:
+    src: templates/hive_server_interactive.py.j2
+    dest: /var/lib/ambari-agent/cache/common-services/HIVE/0.12.0.2.0/package/scripts/hive_server_interactive.py
+    force: true
+    remote_src: no
+  with_items:
+    - "{{ llap_configs }}"
+  ignore_errors: true
+- name: Copy
+  copy:
+    src: templates/params_linux.py.j2
+    dest: /var/lib/ambari-server/resources/common-services/HIVE/0.12.0.2.0/package/scripts/params_linux.py
+    force: true
+    remote_src: no
+  with_items:
+    - "{{ llap_configs }}"
+- name: Copy
+  delegate_to:  "{{item.host}}"
+  copy:
+    src: templates/params_linux.py.j2
+    dest: /var/lib/ambari-agent/cache/common-services/HIVE/0.12.0.2.0/package/scripts/params_linux.py
+    force: true
+    remote_src: no
+  with_items:
+    - "{{ llap_configs }}"
+  ignore_errors: true

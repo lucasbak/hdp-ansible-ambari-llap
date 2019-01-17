@@ -1,0 +1,12 @@
+---
+# Modify ambari server python scripts
+- include: ambari_server.yml
+
+# Add Hive Server Interactive component to host
+- include: ambari_component_add.yml
+
+# Check if Kerberos keyab exists
+- include: kerberos_check.yml
+
+# Start all services
+# - include: start.yml

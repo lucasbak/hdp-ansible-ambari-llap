@@ -1,0 +1,3 @@
+templates/*.json
+templates/fix.json.j2
+._*

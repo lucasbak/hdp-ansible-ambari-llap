@@ -1,0 +1,33 @@
+{
+  "ConfigGroup": {
+     "cluster_name": "{{cluster_name}}",
+     "group_name": "llap{{item.host}}",
+     "tag": "llap{{item.host}}",
+     "description": "Hive Interactive Config group {{item.host}}",
+     "hosts": [ { "host_name" : "{{ item.host }}" } ],
+     "desired_configs": [
+        {
+           "type": "hive-interactive-site",
+           "tag": "hive interactive site {{item.host}}",
+           "properties": {
+               {% for property in item.config['hive-interactive-site'] %}"{{ property.split('=')[0] }}":"{{ property.split('=')[1] }}"{% if not loop.last %},{% endif %}{% endfor %}
+          }
+      },
+
+      {
+         "type": "hive-interactive-env",
+         "tag": "hive interactive env {{item.host}}",
+         "properties": {
+             {% for property in item.config['hive-interactive-env'] %}"{{ property.split('=')[0] }}":"{{ property.split('=')[1] }}"{% if not loop.last %},{% endif %}{% endfor %}
+         }
+       },
+       {
+          "type": "tez-interactive-site",
+          "tag": "tez interactive env {{item.host}}",
+          "properties": {
+              {% for property in item.config['tez-interactive-site'] %}"{{ property.split('=')[0] }}":"{{ property.split('=')[1] }}"{% if not loop.last %},{% endif %}{% endfor %}
+          }
+        }
+    ]
+  }
+}
