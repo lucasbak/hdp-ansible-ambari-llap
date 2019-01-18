@@ -1,4 +1,5 @@
 wait: true
+tez_am_resource_memory_mb: 1024
 llap_configs:
   - host: master01.metal.ryba
     config:

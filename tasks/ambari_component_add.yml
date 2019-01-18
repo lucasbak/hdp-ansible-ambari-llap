@@ -1,15 +1,4 @@
 ---
-- name: Enable Hive Interactive
-  shell: >
-    /var/lib/ambari-server/resources/scripts/configs.py -s {{ambari_server_protocol}} -t {{ambari_server_port}} -l {{ambari_server_hostname}} -n {{cluster_name}} -u {{ambari_username}} -p {{ambari_password}} \
-    -c hive-interactive-env -k enable_hive_interactive -v true -a set
-
-- name: Zookeeper URL
-  when: zk_url is defined
-  shell: >
-    /var/lib/ambari-server/resources/scripts/configs.py -s {{ambari_server_protocol}} -t {{ambari_server_port}} -l {{ambari_server_hostname}} -n {{cluster_name}} -u {{ambari_username}} -p {{ambari_password}} \
-    -c hive-interactive-site -k hive.llap.zk.sm.connectionString -v {{zk_url}} -a set
-
 - name: Load Hive Server Interactive Config
   tags: configgroup
   uri:
@@ -27,8 +16,6 @@
   register: add_hive_config
   no_log: False
   ignore_errors: True
-  with_items:
-    - "{{ llap_configs }}"
 
 - name: Add Hive Interactive Component To Service
   uri:
@@ -44,83 +31,81 @@
     return_content: yes
   register: component_install
   no_log: False
-  with_items:
-    - "{{ llap_configs }}"
   failed_when: component_install.status not in [200, 201, 202,409]
+#
+# - name: Add SLIDER Interactive Component To Host
+#   uri:
+#     url: "{{ ambari_server_protocol }}://{{ ambari_server_hostname }}:{{ ambari_server_port }}/api/v1/clusters/{{ cluster_name }}/hosts/{{item.host}}/host_components/SLIDER"
+#     method: POST
+#     force_basic_auth: yes
+#     user: "{{ ambari_username }}"
+#     password: "{{ ambari_password }}"
+#     headers: '{"X-Requested-By":"ambari", "Content-Type": "application/x-www-form-urlencoded"}'
+#     # body_format: json
+#     validate_certs: no
+#     status_code: 200,201,202, 409
+#     return_content: yes
+#   register: component_add
+#   no_log: False
+#   with_items:
+#     - "{{ llap_configs }}"
+#   failed_when: component_add.status not in [200, 201, 202, 409]
+#
+# - name: Install SLIDER Interactive Component To Host
+#   uri:
+#     url: "{{ ambari_server_protocol }}://{{ ambari_server_hostname }}:{{ ambari_server_port }}/api/v1/clusters/{{ cluster_name }}/hosts/{{item.host}}/host_components/SLIDER"
+#     method: PUT
+#     force_basic_auth: yes
+#     user: "{{ ambari_username }}"
+#     password: "{{ ambari_password }}"
+#     headers: '{"X-Requested-By":"ambari", "Content-Type": "application/x-www-form-urlencoded"}'
+#     body_format: json
+#     body:  '{"RequestInfo": {"context" :"Installing Services API"}, "HostRoles": {"state": "INSTALLED"}}'
+#     validate_certs: no
+#     status_code: 200,201,202
+#     return_content: yes
+#   register: component_install
+#   no_log: False
+#   with_items:
+#     - "{{ llap_configs }}"
+#   failed_when: component_install.status not in [200, 201, 202]
 
-- name: Add SLIDER_CLIENT Interactive Component To Host
-  uri:
-    url: "{{ ambari_server_protocol }}://{{ ambari_server_hostname }}:{{ ambari_server_port }}/api/v1/clusters/{{ cluster_name }}/hosts/{{item.host}}/host_components/SLIDER_CLIENT"
-    method: POST
-    force_basic_auth: yes
-    user: "{{ ambari_username }}"
-    password: "{{ ambari_password }}"
-    headers: '{"X-Requested-By":"ambari", "Content-Type": "application/x-www-form-urlencoded"}'
-    body_format: json
-    validate_certs: no
-    status_code: 200,201,202, 409
-    return_content: yes
-  register: component_add
-  no_log: False
-  with_items:
-    - "{{ llap_configs }}"
-  failed_when: component_add.status not in [200, 201, 202, 409]
-
-- name: Install SLIDER_CLIENT Interactive Component To Host
-  uri:
-    url: "{{ ambari_server_protocol }}://{{ ambari_server_hostname }}:{{ ambari_server_port }}/api/v1/clusters/{{ cluster_name }}/hosts/{{item.host}}/host_components/SLIDER_CLIENT"
-    method: PUT
-    force_basic_auth: yes
-    user: "{{ ambari_username }}"
-    password: "{{ ambari_password }}"
-    headers: '{"X-Requested-By":"ambari", "Content-Type": "application/x-www-form-urlencoded"}'
-    body_format: json
-    body:  '{"RequestInfo": {"context" :"Installing Services API"}, "HostRoles": {"state": "INSTALLED"}}'
-    validate_certs: no
-    status_code: 200,201,202
-    return_content: yes
-  register: component_install
-  no_log: False
-  with_items:
-    - "{{ llap_configs }}"
-  failed_when: component_install.status not in [200, 201, 202]
-
-- name: Add Hive Interactive Component To Host
-  uri:
-    url: "{{ ambari_server_protocol }}://{{ ambari_server_hostname }}:{{ ambari_server_port }}/api/v1/clusters/{{ cluster_name }}/hosts/{{item.host}}/host_components/HIVE_SERVER_INTERACTIVE"
-    method: POST
-    force_basic_auth: yes
-    user: "{{ ambari_username }}"
-    password: "{{ ambari_password }}"
-    headers: '{"X-Requested-By":"ambari", "Content-Type": "application/x-www-form-urlencoded"}'
-    body_format: json
-    validate_certs: no
-    status_code: 200,201,202, 409
-    return_content: yes
-  register: component_add
-  no_log: False
-  with_items:
-    - "{{ llap_configs }}"
-  failed_when: component_add.status not in [200, 201, 202, 409]
-
-- name: Install Hive Interactive Component To Host
-  uri:
-    url: "{{ ambari_server_protocol }}://{{ ambari_server_hostname }}:{{ ambari_server_port }}/api/v1/clusters/{{ cluster_name }}/hosts/{{item.host}}/host_components/HIVE_SERVER_INTERACTIVE"
-    method: PUT
-    force_basic_auth: yes
-    user: "{{ ambari_username }}"
-    password: "{{ ambari_password }}"
-    headers: '{"X-Requested-By":"ambari", "Content-Type": "application/x-www-form-urlencoded"}'
-    body_format: json
-    body:  '{"RequestInfo": {"context" :"Installing Services API"}, "HostRoles": {"state": "INSTALLED"}}'
-    validate_certs: no
-    status_code: 200,201,202
-    return_content: yes
-  register: component_install
-  no_log: False
-  with_items:
-    - "{{ llap_configs }}"
-  failed_when: component_install.status not in [200, 201, 202]
+# - name: Add Hive Interactive Component To Host
+#   uri:
+#     url: "{{ ambari_server_protocol }}://{{ ambari_server_hostname }}:{{ ambari_server_port }}/api/v1/clusters/{{ cluster_name }}/hosts/{{item.host}}/host_components/HIVE_SERVER_INTERACTIVE"
+#     method: POST
+#     force_basic_auth: yes
+#     user: "{{ ambari_username }}"
+#     password: "{{ ambari_password }}"
+#     headers: '{"X-Requested-By":"ambari", "Content-Type": "application/x-www-form-urlencoded"}'
+#     body_format: json
+#     validate_certs: no
+#     status_code: 200,201,202, 409
+#     return_content: yes
+#   register: component_add
+#   no_log: False
+#   with_items:
+#     - "{{ llap_configs }}"
+#   failed_when: component_add.status not in [200, 201, 202, 409]
+#
+# - name: Install Hive Interactive Component To Host
+#   uri:
+#     url: "{{ ambari_server_protocol }}://{{ ambari_server_hostname }}:{{ ambari_server_port }}/api/v1/clusters/{{ cluster_name }}/hosts/{{item.host}}/host_components/HIVE_SERVER_INTERACTIVE"
+#     method: PUT
+#     force_basic_auth: yes
+#     user: "{{ ambari_username }}"
+#     password: "{{ ambari_password }}"
+#     headers: '{"X-Requested-By":"ambari", "Content-Type": "application/x-www-form-urlencoded"}'
+#     body_format: json
+#     body:  '{"RequestInfo": {"context" :"Installing Services API"}, "HostRoles": {"state": "INSTALLED"}}'
+#     validate_certs: no
+#     status_code: 200,201,202
+#     return_content: yes
+#   register: component_install
+#   no_log: False
+#   with_items:
+#     - "{{ llap_configs }}"
+#   failed_when: component_install.status not in [200, 201, 202]
 
 # - name: Wait for Hive Interactive to be installed
 #   uri:
@@ -162,6 +147,7 @@
 #     - "{{ llap_configs }}"
 #   failed_when: schedule_component_install.status not in [200, 201, 202]
 
+
 - name: Install Hive Interactive Component
   uri:
     url: "{{ ambari_server_protocol }}://{{ ambari_server_hostname }}:{{ ambari_server_port }}/api/v1/clusters/{{ cluster_name }}/request_schedules"
@@ -170,20 +156,18 @@
     user: "{{ ambari_username }}"
     password: "{{ ambari_password }}"
     headers: '{"X-Requested-By":"ambari", "Content-Type": "application/x-www-form-urlencoded"}'
-    body: '[{"RequestSchedule":{"batch":[{"requests":[{"type":"POST","uri":"/clusters/{{cluster_name}}/services/HIVE/components/HIVE_SERVER_INTERACTIVE","order_id":1},{"type":"POST","uri":"/clusters/{{cluster_name}}/hosts","RequestBodyInfo":{"RequestInfo":{"query":"Hosts/host_name.in({{item.host}})"},"Body":{"host_components":[{"HostRoles":{"component_name":"HIVE_SERVER_INTERACTIVE"}},{"HostRoles":{"component_name":"HDFS_CLIENT"}},{"HostRoles":{"component_name":"MAPREDUCE2_CLIENT"}},{"HostRoles":{"component_name":"PIG"}},{"HostRoles":{"component_name":"SLIDER"}},{"HostRoles":{"component_name":"TEZ_CLIENT"}},{"HostRoles":{"component_name":"YARN_CLIENT"}}]}},"order_id":2},{"type":"PUT","uri":"/clusters/{{cluster_name}}/hosts/{{item.host}}/host_components","RequestBodyInfo":{"RequestInfo":{"context":"Install Components","operation_level":{"level":"HOST","cluster_name":"{{cluster_name}}","host_names":"{{item.host}}"},"query":"HostRoles/component_name.in(HIVE_SERVER_INTERACTIVE,HDFS_CLIENT,MAPREDUCE2_CLIENT,PIG,SLIDER,TEZ_CLIENT,YARN_CLIENT)"},"Body":{"HostRoles":{"state":"INSTALLED"}}},"order_id":3}]},{"batch_settings":{"batch_separation_in_seconds":1,"task_failure_tolerance":0}}]}}]'
+    body: '[{"RequestSchedule":{"batch":[{"requests":[{"type":"POST","uri":"/clusters/{{cluster_name}}/services/HIVE/components/HIVE_SERVER_INTERACTIVE","order_id":1},{"type":"POST","uri":"/clusters/{{cluster_name}}/hosts","RequestBodyInfo":{"RequestInfo":{"query":"Hosts/host_name.in({{item.host}})"},"Body":{"host_components":[{"HostRoles":{"component_name":"HIVE_SERVER_INTERACTIVE"}},{"HostRoles":{"component_name":"HDFS_CLIENT"}},{"HostRoles":{"component_name":"SLIDER"}},{"HostRoles":{"component_name":"MAPREDUCE2_CLIENT"}},{"HostRoles":{"component_name":"PIG"}},{"HostRoles":{"component_name":"SLIDER"}},{"HostRoles":{"component_name":"TEZ_CLIENT"}},{"HostRoles":{"component_name":"YARN_CLIENT"}}]}},"order_id":2},{"type":"PUT","uri":"/clusters/{{cluster_name}}/hosts/{{item.host}}/host_components","RequestBodyInfo":{"RequestInfo":{"context":"Install Components","operation_level":{"level":"HOST","cluster_name":"{{cluster_name}}","host_names":"{{item.host}}"},"query":"HostRoles/component_name.in(HIVE_SERVER_INTERACTIVE,HDFS_CLIENT,MAPREDUCE2_CLIENT,PIG,SLIDER,TEZ_CLIENT,YARN_CLIENT)"},"Body":{"HostRoles":{"state":"INSTALLED"}}},"order_id":3}]},{"batch_settings":{"batch_separation_in_seconds":1,"task_failure_tolerance":0}}]}}]'
     body_format: json
     validate_certs: no
     status_code: 200,201,202
     return_content: yes
   register: schedule_component_install
   no_log: False
-  with_items:
-    - "{{ llap_configs }}"
   failed_when: schedule_component_install.status not in [200, 201, 202]
 
 - name: Wait for Hive Interactive to be installed
   uri:
-    url: "{{ ambari_server_protocol }}://{{ ambari_server_hostname }}:{{ ambari_server_port }}/api/v1/clusters/{{ cluster_name }}/requests/{{ schedule_component_install.json.Requests.id }}"
+    url: "{{ ambari_server_protocol }}://{{ ambari_server_hostname }}:{{ ambari_server_port }}/api/v1/clusters/{{ cluster_name }}/request_schedules/{{ schedule_component_install.json.resources[0].RequestSchedule.id }}"
     method: GET
     force_basic_auth: yes
     user: "{{ ambari_username }}"
@@ -194,10 +178,11 @@
     validate_certs: no
     return_content: yes
   register: wait_component_install
-  until: (wait_component_install.json.Requests.request_status == 'COMPLETED' and (wait_component_install.json.Requests.completed_task_count|int > 0) or
-          wait_component_install.json.Requests.request_status == 'FAILED' or
-          wait_component_install.json.Requests.request_status == 'TIMEDOUT' or
-          wait_component_install.json.Requests.request_status == 'ABORTED')
+  until: (wait_component_install.json.RequestSchedule.status == 'COMPLETED' or
+          wait_component_install.json.RequestSchedule.status == 'FAILED' or
+          wait_component_install.json.RequestSchedule.status == 'TIMEDOUT' or
+          wait_component_install.json.RequestSchedule.status == 'ABORTED')
   retries: "{{ wait_timeout // 10 }}"
   delay: 10
+  no_log: False
   when: wait and schedule_component_install.json is defined

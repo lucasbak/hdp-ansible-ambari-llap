@@ -1,0 +1,16 @@
+- name: Enable Hive Interactive
+  shell: >
+    /var/lib/ambari-server/resources/scripts/configs.py -s {{ambari_server_protocol}} -t {{ambari_server_port}} -l {{ambari_server_hostname}} -n {{cluster_name}} -u {{ambari_username}} -p {{ambari_password}} \
+    -c hive-interactive-env -k enable_hive_interactive -v true -a set
+
+- name: Zookeeper URL
+  when: zk_url is defined
+  shell: >
+    /var/lib/ambari-server/resources/scripts/configs.py -s {{ambari_server_protocol}} -t {{ambari_server_port}} -l {{ambari_server_hostname}} -n {{cluster_name}} -u {{ambari_username}} -p {{ambari_password}} \
+    -c hive-interactive-site -k hive.llap.zk.sm.connectionString -v {{zk_url}} -a set
+
+- name: Tez Am Resource MB
+  when: tez_am_resource_memory_mb is defined
+  shell: >
+    /var/lib/ambari-server/resources/scripts/configs.py -s {{ambari_server_protocol}} -t {{ambari_server_port}} -l {{ambari_server_hostname}} -n {{cluster_name}} -u {{ambari_username}} -p {{ambari_password}} \
+    -c tez-interactive-site -k tez.am.resource.memory.mb -v {{tez_am_resource_memory_mb}} -a set
